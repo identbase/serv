@@ -64,7 +64,7 @@ type HALError struct {
 	representor.HALBody
 }
 
-func NewHALError(c string, m string) *HALError {
+func NewHALError(m string, c string) *HALError {
 	e := HALError{
 		representor.HALBody{
 			Links: map[string][]representor.HALLink{
