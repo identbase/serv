@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/identbase/getting/pkg/resource/representor"
 )
@@ -70,7 +71,7 @@ func NewHALError(m string, c string) *HALError {
 			Links: map[string][]representor.HALLink{
 				"self": []representor.HALLink{
 					representor.HALLink{
-						HRef:  fmt.Sprintf("/_matrix/errors/%s", c),
+						HRef:  fmt.Sprintf("/_matrix/errors/%s", strings.ToLower(c)),
 						Title: c,
 					},
 				},
