@@ -79,6 +79,7 @@ func NewHALError(c string, m string) *HALError {
 				"errcode": c,
 				"error":   m,
 			},
+			Embedded: map[string]representor.HALBody{},
 		},
 	}
 
