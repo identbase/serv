@@ -1,7 +1,10 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
+
+	"github.com/identbase/getting/pkg/resource/representor"
 )
 
 /*
@@ -57,9 +60,34 @@ type Error struct {
 	Message string      `json:"error"`
 }
 
+type HALError struct {
+	representor.HALBody
+}
+
+func NewHALError(c string, m string) *HALError {
+	e := HALError{
+		representor.HALBody{
+			Links: map[string][]representor.HALLink{
+				"self": []representor.HALLink{
+					representor.HALLink{
+						HRef:  fmt.Sprintf("/_matrix/errors/%s", c),
+						Title: c,
+					},
+				},
+			},
+			Properties: map[string]interface{}{
+				"errcode": c,
+				"error":   m,
+			},
+		},
+	}
+
+	return &e
+}
+
 /*
 Errors is a mapping of net/http status codes to Error*'s. */
-var Errors = map[int]Error{
+var Errors = map[int]*HALError{
 	http.StatusBadRequest:                   ErrorBadRequest,
 	http.StatusUnauthorized:                 ErrorUnauthorized,
 	http.StatusPaymentRequired:              ErrorPaymentRequired,
@@ -103,44 +131,44 @@ var Errors = map[int]Error{
 
 /*
 Error* are net/http status codes to Error objects. */
-var ErrorBadRequest = Error{Message: "Bad Request", Code: CodeBadRequest}
-var ErrorUnauthorized = Error{Message: "Unauthorized", Code: CodeUnauthorized}
-var ErrorPaymentRequired = Error{Message: "Payment Required", Code: CodePaymentRequired}
-var ErrorForbidden = Error{Message: "Forbidden", Code: CodeForbidden}
-var ErrorNotFound = Error{Message: "Not Found", Code: CodeNotFound}
-var ErrorMethodNotAllowed = Error{Message: "Method Not Allowed", Code: CodeMethodNotAllowed}
-var ErrorNotAcceptable = Error{Message: "Not Acceptable", Code: CodeNotAcceptable}
-var ErrorProxyAuthRequired = Error{Message: "Proxy Auth Required", Code: CodeProxyAuthRequired}
-var ErrorRequestTimeout = Error{Message: "Request Timeout", Code: CodeRequestTimeout}
-var ErrorConflict = Error{Message: "Conflict", Code: CodeConflict}
-var ErrorGone = Error{Message: "Gone", Code: CodeGone}
-var ErrorLengthRequired = Error{Message: "Length Required", Code: CodeLengthRequired}
-var ErrorPreconditionFailed = Error{Message: "Precondition Failed", Code: CodePreconditionFailed}
-var ErrorRequestEntityTooLarge = Error{Message: "Request Entity Too Large", Code: CodeRequestEntityTooLarge}
-var ErrorRequestURITooLong = Error{Message: "Request URI Too Long", Code: CodeRequestURITooLong}
-var ErrorUnsupportedMediaType = Error{Message: "Unsupported Media Type", Code: CodeUnsupportedMediaType}
-var ErrorRequestedRangeNotSatisfiable = Error{Message: "Requested Range Not Satisfiable", Code: CodeRequestedRangeNotSatisfiable}
-var ErrorExpectationFailed = Error{Message: "Expectation Failed", Code: CodeExpectationFailed}
-var ErrorTeapot = Error{Message: "Teapot", Code: CodeTeapot}
-var ErrorMisdirectedRequest = Error{Message: "Misdirected Request", Code: CodeMisdirectedRequest}
-var ErrorUnprocessableEntity = Error{Message: "Unprocessable Entity", Code: CodeUnprocessableEntity}
-var ErrorLocked = Error{Message: "Locked", Code: CodeLocked}
-var ErrorFailedDependency = Error{Message: "Failed Dependency", Code: CodeFailedDependency}
-var ErrorTooEarly = Error{Message: "Too Early", Code: CodeTooEarly}
-var ErrorUpgradeRequired = Error{Message: "Upgrade Required", Code: CodeUpgradeRequired}
-var ErrorPreconditionRequired = Error{Message: "Precondition Required", Code: CodePreconditionRequired}
-var ErrorTooManyRequests = Error{Message: "Too Many Requests", Code: CodeTooManyRequests}
-var ErrorRequestHeaderFieldsTooLarge = Error{Message: "Request Header Fields Too Large", Code: CodeRequestHeaderFieldsTooLarge}
-var ErrorUnavailableForLegalReasons = Error{Message: "Unavailable For Legal Reasons", Code: CodeUnavailableForLegalReasons}
+var ErrorBadRequest = NewHALError("Bad Request", CodeBadRequest)
+var ErrorUnauthorized = NewHALError("Unauthorized", CodeUnauthorized)
+var ErrorPaymentRequired = NewHALError("Payment Required", CodePaymentRequired)
+var ErrorForbidden = NewHALError("Forbidden", CodeForbidden)
+var ErrorNotFound = NewHALError("Not Found", CodeNotFound)
+var ErrorMethodNotAllowed = NewHALError("Method Not Allowed", CodeMethodNotAllowed)
+var ErrorNotAcceptable = NewHALError("Not Acceptable", CodeNotAcceptable)
+var ErrorProxyAuthRequired = NewHALError("Proxy Auth Required", CodeProxyAuthRequired)
+var ErrorRequestTimeout = NewHALError("Request Timeout", CodeRequestTimeout)
+var ErrorConflict = NewHALError("Conflict", CodeConflict)
+var ErrorGone = NewHALError("Gone", CodeGone)
+var ErrorLengthRequired = NewHALError("Length Required", CodeLengthRequired)
+var ErrorPreconditionFailed = NewHALError("Precondition Failed", CodePreconditionFailed)
+var ErrorRequestEntityTooLarge = NewHALError("Request Entity Too Large", CodeRequestEntityTooLarge)
+var ErrorRequestURITooLong = NewHALError("Request URI Too Long", CodeRequestURITooLong)
+var ErrorUnsupportedMediaType = NewHALError("Unsupported Media Type", CodeUnsupportedMediaType)
+var ErrorRequestedRangeNotSatisfiable = NewHALError("Requested Range Not Satisfiable", CodeRequestedRangeNotSatisfiable)
+var ErrorExpectationFailed = NewHALError("Expectation Failed", CodeExpectationFailed)
+var ErrorTeapot = NewHALError("Teapot", CodeTeapot)
+var ErrorMisdirectedRequest = NewHALError("Misdirected Request", CodeMisdirectedRequest)
+var ErrorUnprocessableEntity = NewHALError("Unprocessable Entity", CodeUnprocessableEntity)
+var ErrorLocked = NewHALError("Locked", CodeLocked)
+var ErrorFailedDependency = NewHALError("Failed Dependency", CodeFailedDependency)
+var ErrorTooEarly = NewHALError("Too Early", CodeTooEarly)
+var ErrorUpgradeRequired = NewHALError("Upgrade Required", CodeUpgradeRequired)
+var ErrorPreconditionRequired = NewHALError("Precondition Required", CodePreconditionRequired)
+var ErrorTooManyRequests = NewHALError("Too Many Requests", CodeTooManyRequests)
+var ErrorRequestHeaderFieldsTooLarge = NewHALError("Request Header Fields Too Large", CodeRequestHeaderFieldsTooLarge)
+var ErrorUnavailableForLegalReasons = NewHALError("Unavailable For Legal Reasons", CodeUnavailableForLegalReasons)
 
-var ErrorInternalServerError = Error{Message: "Internal Server Error", Code: CodeInternalServerError}
-var ErrorNotImplemented = Error{Message: "Not Implemented", Code: CodeNotImplemented}
-var ErrorBadGateway = Error{Message: "Bad Gateway", Code: CodeBadGateway}
-var ErrorServiceUnavailable = Error{Message: "Service Unavailable", Code: CodeServiceUnavailable}
-var ErrorGatewayTimeout = Error{Message: "Gateway Timeout", Code: CodeGatewayTimeout}
-var ErrorHTTPVersionNotSupported = Error{Message: "HTTP Version Not Supported", Code: CodeHTTPVersionNotSupported}
-var ErrorVariantAlsoNegotiates = Error{Message: "Variant Also Negotiates", Code: CodeVariantAlsoNegotiates}
-var ErrorInsufficientStorage = Error{Message: "Insufficient Storage", Code: CodeInsufficientStorage}
-var ErrorLoopDetected = Error{Message: "Loop Detected", Code: CodeLoopDetected}
-var ErrorNotExtended = Error{Message: "Not Extended", Code: CodeNotExtended}
-var ErrorNetworkAuthenticationRequired = Error{Message: "Network Authentication Required", Code: CodeNetworkAuthenticationRequired}
+var ErrorInternalServerError = NewHALError("Internal Server Error", CodeInternalServerError)
+var ErrorNotImplemented = NewHALError("Not Implemented", CodeNotImplemented)
+var ErrorBadGateway = NewHALError("Bad Gateway", CodeBadGateway)
+var ErrorServiceUnavailable = NewHALError("Service Unavailable", CodeServiceUnavailable)
+var ErrorGatewayTimeout = NewHALError("Gateway Timeout", CodeGatewayTimeout)
+var ErrorHTTPVersionNotSupported = NewHALError("HTTP Version Not Supported", CodeHTTPVersionNotSupported)
+var ErrorVariantAlsoNegotiates = NewHALError("Variant Also Negotiates", CodeVariantAlsoNegotiates)
+var ErrorInsufficientStorage = NewHALError("Insufficient Storage", CodeInsufficientStorage)
+var ErrorLoopDetected = NewHALError("Loop Detected", CodeLoopDetected)
+var ErrorNotExtended = NewHALError("Not Extended", CodeNotExtended)
+var ErrorNetworkAuthenticationRequired = NewHALError("Network Authentication Required", CodeNetworkAuthenticationRequired)
